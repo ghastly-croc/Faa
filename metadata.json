@@ -1,0 +1,5 @@
+{
+  "name": "JKSSB FAA Prep Assistant",
+  "description": "An application to help aspirants prepare for the JKSSB Finance Account Assistant exam by providing syllabus-based topic tags and generating study materials using AI.",
+  "requestFramePermissions": []
+}
