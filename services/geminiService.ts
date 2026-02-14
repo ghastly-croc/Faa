@@ -1,6 +1,5 @@
 import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
-// FIX: Changed path from '../types' to './types' because of flat structure
-import type { StudyResource } from './types';
+import type { StudyResource } from '../types';
 
 const mcqSchema = {
   type: Type.ARRAY,
@@ -25,11 +24,10 @@ export interface GenerationResult {
 }
 
 export const generateStudyMaterial = async (topic: string, type: 'notes' | 'mcq' | 'resources' | 'summary'): Promise<GenerationResult> => {
-  // FIX: Using import.meta.env and VITE_ prefix for Cloudflare/Vite
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
   
   if (!API_KEY) {
-    throw new Error("API_KEY is not configured. Please add VITE_GEMINI_API_KEY to Cloudflare environment variables.");
+    throw new Error("API_KEY is not configured. Please add VITE_GEMINI_API_KEY to Cloudflare.");
   }
   
   const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -51,12 +49,11 @@ export const generateStudyMaterial = async (topic: string, type: 'notes' | 'mcq'
   } else if (type === 'summary') {
     prompt = `Generate a concise summary or a set of flashcards for the topic '${topic}' for the JKSSB Finance Account Assistant exam. Focus on key points, definitions, and formulas suitable for quick revision. Briefly mention the practical relevance of each key point in a finance and accounting context. Use markdown for formatting.`;
   } else {
-    prompt = `Generate comprehensive and detailed study notes for the topic '${topic}' for the JKSSB Finance Account Assistant exam. The notes must be thorough, going beyond simple definitions. Where applicable, include historical context to explain the evolution of concepts. Crucially, provide practical, real-world examples related to government procurement, salary disbursement, or public works expenditure. Use markdown for clear formatting, including headings, subheadings, bold text for key terms, and nested bullet points.`;
+    prompt = `Generate comprehensive and detailed study notes for the topic '${topic}' for the JKSSB Finance Account Assistant exam. The notes must be thorough, going beyond simple definitions. Where applicable, include historical context to explain the evolution of concepts. Crucially, provide practical, real-world examples related to government procurement, salary disbursement, or public works expenditure. Use markdown for clear formatting.`;
   }
   
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      // FIX: Using stable Gemini 1.5 Flash for better reliability
       model: "gemini-1.5-flash",
       contents: prompt,
       config: modelConfig,
@@ -87,3 +84,6 @@ export const generateStudyMaterial = async (topic: string, type: 'notes' | 'mcq'
     if (error instanceof Error) {
         throw new Error(`Failed to generate study material: ${error.message}`);
     }
+    throw new Error("Failed to generate study material due to an unknown error.");
+  }
+};
